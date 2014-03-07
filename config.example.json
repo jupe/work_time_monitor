@@ -1,0 +1,20 @@
+﻿{
+  "feeds": [{
+     "id":1,
+     "text":"my-calendar",
+     "url":"https://www.google.com/calendar/feeds/...%40group.calendar.google.com/public/full",
+     "holiday-cal": "Finnish Holidays"
+    },
+    {
+      "id":2,
+      "text":"my-calendar2",
+      "url":"https://www.google.com/calendar/feeds/.../full",
+      "holiday-cal": "Finnish Holidays"
+    }
+  "nightStart": 17,
+  "nightEnd": 8,
+  "distanceWage": 0.25,
+  "ignoreKeys" : [
+    "sairaslomapäivä", "sairasloma"
+  ]
+}

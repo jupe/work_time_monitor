@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" media="all" href="lib/daterangepicker/daterangepicker-bs3.css" />
+    
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script> 
+    
+    <script src="lib/momentjs/moment.min.js"></script>
+    <script type="text/javascript" src="lib/datejs/date.js"></script>
+    
+    
+    <script type="text/javascript" src="lib/daterangepicker/daterangepicker.js"></script> 
+    <script type="text/javascript" src="http://www.google.com/jsapi?key=AIzaSyAgcsfxd7-Jq4GB3b5yOBqG5uSIEnKIqIY"></script>
+    
+    <script src="lib/jquery.event.drag-2.2.js"></script>
+    
+    <link rel="stylesheet" href="lib/select2/select2.css" type="text/css"/>
+    <script src="lib/select2/select2.min.js"></script>
+    
+    
+    <link rel="stylesheet" href="lib/SlickGrid/slick.grid.css" type="text/css"/>
+    <link rel="stylesheet" href="lib/SlickGrid/slick-default-theme.css" type="text/css"/>
+    <script src="lib/SlickGrid/slick.core.js"></script>
+    <script src="lib/SlickGrid/slick.grid.js"></script>
+    <script src="lib/SlickGrid/slick.formatters.js"></script>
+    <script src="lib/SlickGrid/plugins/slick.cellrangedecorator.js"></script>
+    <script src="lib/SlickGrid/plugins/slick.cellrangeselector.js"></script>
+    <script src="lib/SlickGrid/plugins/slick.cellselectionmodel.js"></script>
+    <script src="lib/SlickGrid/slick.dataview.js"></script>
+    <script src="lib/SlickGrid/slick.groupitemmetadataprovider.js"></script>
+    
+    
+    
+    
+    <script type="text/javascript" src="index.js"></script>
+    <script type="text/javascript">
+      //google.load("jquery", "1.*");
+      //google.load("jqueryui", "1.7.2");
+      google.load('gdata', '2.x');
+    </script>
+    <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: auto;
+    }
+    body {
+      font: 11px Helvetica, Arial, sans-serif;
+    }
+    #myGrid {
+      margin: 10px;
+      border: solid 1px gray;
+      width: 480px;
+      background: white;
+    }
+    #summary{
+      width: 500px;
+      height: 200px;
+    }
+    
+  </style>
+  </head>
+
+  <body>
+
+    <div class="well">
+        <div class="form-horizontal">
+            <fieldset>
+                
+                <input name="calendar" id="calendarfeed" style="width:300px" ></input>
+                
+                <i class="fa fa-calendar" style="margin-left: 10px;"></i>
+                <input type="text" name="reservation" placeholder="Select date range" id="daterange" />
+                
+                
+                Distance: <input title="Single direction distance [km]" type="number" value="40" id="distance" min="0" max="500" step="0.5" style="width: 60px;">
+                hourly wages: <input title="payment [€/h]" type="number" value="20" id="wage" min="0" max="100" step="0.1" style="width: 50px;">
+                tax rates: <input title="tax rate [%]" type="number" value="21" id="tax" min="0" max="60" step="0.1" style="width: 50px;">
+            </fieldset>
+        </div>
+        
+
+       <input type="button" value="Download CSV" id="download">
+       <input type="button" value="Download TXT" id="createText">
+       
+       <input name="group" id="grouping" style="width:150px" ></input>
+       <!-- <input type="button" value="Group By weeks" groupby="week" id="group"> -->
+       
+    </div>
+    <div id="summary"></div>
+    <div id="myGrid" style="width:90%;overflow:visible; min-height:500px; max-height:900px;"></div>
+  
+    <div id="text" />
+    
+  </body>
+</html>
