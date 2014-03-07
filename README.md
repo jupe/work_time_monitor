@@ -2,6 +2,7 @@ Work Time Monitor
 =================
 
 Simple web page, which can be used to monitor working hours and wages. Based on google calendar.
+![Screenshot](https://raw.github.com/jupe/work_time_monitor/master/screenshot/page.png "Example")
 
 # Features
 * User Selectable time period
