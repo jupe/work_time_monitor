@@ -5,6 +5,7 @@ Simple web page, which can be used to monitor working hours and wages. Based on 
 ![Screenshot](https://raw.github.com/jupe/work_time_monitor/master/screenshot/page.png "Example")
 
 # Features
+* Read your Google Calendar events (*)
 * User Selectable time period
 * Support multiple calendars
 * Calculate summary of given period
@@ -14,6 +15,9 @@ Simple web page, which can be used to monitor working hours and wages. Based on 
 * calculate taxes
 * Download as CSV/TXT (not fully implemented)
 * table view, which can be grouped by year/month/week or day
+
+(*)
+It woulf be best if you create separate calendar for tracking purpose, where all events are supposed to be like "working events". There is also several mobile applications, which can collect usage events to the remote google calendar.....
 
 # Installation:
 
