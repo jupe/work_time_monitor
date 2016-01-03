@@ -32,16 +32,8 @@
     <script src="lib/SlickGrid/plugins/slick.cellselectionmodel.js"></script>
     <script src="lib/SlickGrid/slick.dataview.js"></script>
     <script src="lib/SlickGrid/slick.groupitemmetadataprovider.js"></script>
-    
-    
-    
-    
     <script type="text/javascript" src="index.js"></script>
-    <script type="text/javascript">
-      //google.load("jquery", "1.*");
-      //google.load("jqueryui", "1.7.2");
-      google.load('gdata', '2.x');
-    </script>
+    <script src="https://apis.google.com/js/client.js?onload=checkAuth"></script>
     <style>
     html, body {
       margin: 0;
@@ -66,7 +58,13 @@
   </head>
 
   <body>
-
+    <div id="authorize-div" style="display: none">
+      <span>Authorize access to Google Calendar API</span>
+      <!--Button for the user to click to initiate auth sequence -->
+      <button id="authorize-button" onclick="handleAuthClick(event)">
+        Authorize
+      </button>
+    </div>
     <div class="well">
         <div class="form-horizontal">
             <fieldset>

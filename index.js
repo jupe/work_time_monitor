@@ -2,6 +2,64 @@
 var gData;
 var grid;
 
+// Your Client ID can be retrieved from your project in the Google
+// Developer Console, https://console.developers.google.com
+var CLIENT_ID = '<YOUR_CLIENT_ID>';
+var SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"];
+/**
+ * Check if current user has authorized this application.
+ */
+function checkAuth() {
+  gapi.auth.authorize(
+    {
+      'client_id': CLIENT_ID,
+      'scope': SCOPES.join(' '),
+      'immediate': true
+    }, handleAuthResult);
+}
+/**
+ * Handle response from authorization server.
+ *
+ * @param {Object} authResult Authorization result.
+ */
+function handleAuthResult(authResult) {
+  var authorizeDiv = document.getElementById('authorize-div');
+  if (authResult && !authResult.error) {
+    // Hide auth UI, then load client library.
+    authorizeDiv.style.display = 'none';
+    loadCalendarApi();
+  } else {
+    // Show auth UI, allowing the user to initiate authorization by
+    // clicking authorize button.
+    authorizeDiv.style.display = 'inline';
+  }
+}
+
+/**
+ * Initiate auth flow in response to user clicking authorize button.
+ *
+ * @param {Event} event Button click event.
+ */
+function handleAuthClick(event) {
+  gapi.auth.authorize(
+    {client_id: CLIENT_ID, scope: SCOPES, immediate: false},
+    handleAuthResult);
+  return false;
+}
+
+/**
+ * Load Google Calendar client library. List upcoming events
+ * once client library is loaded.
+ */
+function loadCalendarApi() {
+  gapi.client.load('calendar', 'v3', calendarApiCb);
+}
+function calendarApiCb(){
+  //var request = gapi.client.calendar.events.list({
+  console.log('request..')
+}
+
+
 // this downloads the current data table as a CSV file to the client
 function toText()
 {
@@ -161,10 +219,10 @@ $(document).ready(function() {
     {
         return Config.distanceWage;
     }
-    function getFeedUrl()
+    function getCalendarId()
     {
       var data = $('#calendarfeed').select2('data');
-      return data?data.url:false;
+      return data?data.calendarId:false;
     }
     function translatePublicHolidays(title){
       return title;
@@ -181,13 +239,7 @@ $(document).ready(function() {
       cal = publicHolidayCalendars[ cal ]
       return encodeURIComponent( cal );
     }
-                   
-    var myService;
-    
-    // Call function once the client has loaded
-    google.setOnLoadCallback(function(){
-      myService = new google.gdata.calendar.CalendarService('WorkingDiary');
-    });
+
     function ucwords(str) {
       return (str + '')
         .replace(/^([a-z\u00E0-\u00FC])|\s+([a-z\u00E0-\u00FC])/g, function($1) {
@@ -419,7 +471,7 @@ $(document).ready(function() {
         for (var len=entries.length; i < len; i++) {
             var entry = entries[i];
             
-            var title = entry.getTitle().getText();
+            var title = entry.summary;
             
             var skip=false;
             parts = title.split(' ');
@@ -435,16 +487,12 @@ $(document).ready(function() {
             var duration = 0;
             var startJSDate = null;
             var endJSDate = null;
-            var times = entry.getTimes();
-            var locations = entry.getLocations();
-            if (times.length > 0) {
-              startDateTime = times[0].getStartTime();
-              startJSDate = moment(startDateTime.getDate());
-              
-              endDateTime = times[0].getEndTime();
-              endJSDate = moment(endDateTime.getDate());
-              duration = endJSDate-startJSDate;
-            }
+            var times = [entry.start.dateTime, entry.end.dateTime];
+            var locations = entry.location;
+            
+            startJSDate = moment(entry.start.dateTime);
+            endJSDate = moment(entry.end.dateTime);
+            duration = endJSDate-startJSDate;
             var distance = getSingleDistance()*2;
             
             if( startJSDate.day() == 0 || startJSDate.day() == 6 )
@@ -551,7 +599,7 @@ $(document).ready(function() {
     {
       var handleMyFeed = function(myResultsFeedRoot) {
         //alert("This feed's title is: " + myResultsFeedRoot.feed.getTitle().getText());
-        entries =  convert( myResultsFeedRoot.feed.entry );
+        entries =  convert( myResultsFeedRoot.items );
         if( callback ) {
           callback(null, entries);
         } else {
@@ -559,17 +607,36 @@ $(document).ready(function() {
           writer(combined);
         }
       }
-      var url = getFeedUrl();
-      if( url===false) {
+      var calendarId = getCalendarId();
+      if( calendarId===false) {
         console.log('No calendar selected');
         return;
       }
-      url += "?orderby=starttime&max-results=1000";
-      // 2005-08-09T10:57:00-08:00.
-      var frm='YYYY-MM-DD';
-      url += "&start-min="+moment(start).format(frm)+'T00:00:00-00:00';
-      url += "&start-max="+moment(end).format(frm)+'T24:00:00-00:00';
-      myService.getEventsFeed(url, handleMyFeed, handleError);
+      var frm='YYYY-MM-DD'; // 2005-08-09T10:57:00-08:00.
+      var timeMin = moment(start).format(frm)+'T00:00:00-00:00';
+      var timeMax = moment(end).format(frm)+'T24:00:00-00:00';
+
+      var reqBody = {
+        'calendarId': calendarId,
+        'timeMin': timeMin,
+        'showDeleted': false,
+        'singleEvents': true,
+        'maxResults': 1000,
+        'orderBy': 'startTime'
+      }
+      if( moment(end)>moment(start) ){
+        /// @todo causes failure 
+        //reqBody.timeMax = timeMax;
+      }
+
+      var request = gapi.client.calendar.events.list(reqBody);
+
+      request.execute(function(resp) {
+        if( resp.code && resp.code !== 200 ){
+          return handleError(resp);
+        }
+        handleMyFeed(resp);
+      });
     }
     
     function refreshData(start, end, reloadHolidays){
@@ -602,22 +669,19 @@ $(document).ready(function() {
     }
     
     
-    
-    
     function getPublicHolidays(start, end, callback){
       
-      var cal = getSelectedHolidayCalendar();
-      if( !cal ){
+      var holidayCal = getSelectedHolidayCalendar();
+      if( !holidayCal ){
         callback('period missing');
         return;
       }
-      var url = 'https://www.google.com/calendar/feeds/'+cal+'/public/full';
-      url += "?alt=json&orderby=starttime&max-results=1000";
-      frm='YYYY-MM-DD'; // 2005-08-09T10:57:00-08:00.
-      url += "&start-min="+moment(start).format(frm)+'T00:00:00-00:00';
-      url += "&start-max="+moment(end).format(frm)+'T24:00:00-00:00';
-      function handleMyHolidaysFeed(myResultsFeedRoot){
-        var entry = myResultsFeedRoot.feed.entry;
+
+      //return callback(null, []);
+      var frm='YYYY-MM-DD'; // 2005-08-09T10:57:00-08:00.
+      var timeMin = moment(start).format(frm)+'T00:00:00-00:00';
+      var timeMax = moment(end).format(frm)+'T24:00:00-00:00';
+      function handleMyHolidaysFeed(entry){
         var list = [];
         if( !entry ){ 
           callback(null, list); //no public holidays in given period
@@ -640,10 +704,26 @@ $(document).ready(function() {
         }
         callback(null, list);
       }
-      $.ajax({
-        url: url,
-        type: 'get',
-        dataType: 'jsonp'
-      }).done( handleMyHolidaysFeed );
+      var reqBody = {
+        'calendarId': holidayCal,
+        'timeMin': timeMin,
+        'singleEvents': true,
+        'maxResults': 1000,
+        'orderBy': 'startTime'
+      }
+      if( moment(end)>moment(start) ){
+        /// @todo causes failure
+        //reqBody.timeMax = timeMax;
+      }
+
+      var request = gapi.client.calendar.events.list(reqBody);
+
+      request.execute(function(resp) {
+        if( resp.code && resp.code !== 200 ){
+          console.error(resp.message);
+          return callback(null, []);
+        }
+        handleMyHolidaysFeed(resp.items);
+      });
     }
 });

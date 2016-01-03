@@ -2,19 +2,22 @@
   "feeds": [{
      "id":1,
      "text":"my-calendar",
-     "url":"https://www.google.com/calendar/feeds/...%40group.calendar.google.com/public/full",
-     "holiday-cal": "Finnish Holidays"
+     "wage": 22,
+     "calendarId":"<my-calendar>",
+     "holiday-cal": "Finnish Holidays",
+     "weekHours": 38.5,
+     "distance": 3
     },
     {
       "id":2,
       "text":"my-calendar2",
-      "url":"https://www.google.com/calendar/feeds/.../full",
+      "calendarId":"<my-calendar2>",
       "holiday-cal": "Finnish Holidays"
-    }
-  "nightStart": 17,
-  "nightEnd": 8,
-  "distanceWage": 0.25,
-  "ignoreKeys" : [
-    "sairaslomapäivä", "sairasloma"
-  ]
+    },
+    "nightStart": 17,
+    "nightEnd": 8,
+    "distanceWage": 0.25,
+    "ignoreKeys" : [
+      "sairaslomapäivä", "sairasloma"
+    ]
 }
