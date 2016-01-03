@@ -23,7 +23,8 @@ It woulf be best if you create separate calendar for tracking purpose, where all
 
 1. copy files to web server 
 2. create your own config.json (example in config.example.json)
-3. Open page.
+3. [generate Google APIv3 ClientID](https://console.developers.google.com/apis/credentials?)
+4. Open web page
 
 # License
 See LICENSE file
